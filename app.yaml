@@ -1,0 +1,37 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: diplomovka
+  labels:
+    app: diplomovka
+spec:
+  type: ClusterIP
+  selector:
+    app: diplomovka
+  ports:
+    - name: tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: diplomovka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: diplomovka
+  template:
+    metadata:
+      labels:
+        app: diplomovka
+        version: v1
+    spec:
+      containers:
+      - name: diplomovka
+        image: diplomovka
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
