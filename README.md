@@ -183,3 +183,25 @@ mvn package -Pjlink-image -Djlink.image.addClassDataSharingArchive=false
 
 For more information on available configuration options see the helidon-maven-plugin documentation.
                                 
+The initial native image was not able to build an image so I removed static build
+`RUN mvn package -Pnative-image -DskipTests`
+and removed from scratch to
+`FROM oraclelinux:9-slim`
+
+to publish image to github:
+1. docker login ghcr.io and credentials from github (use the token from github)
+2. docker build -f Dockerfile.native -t diplomovka .
+3. docker tag diplomovka:latest ghcr.io/destroyerofcode/diplomovka:latest
+4. docker push ghcr.io/destroyerofcode/diplomovka:latest
+then in hetzner
+1. docker login ghcr.io
+2. docker pull ghcr.io/destroyerofcode/diplomovka:latest
+3. docker run -d   --name diplomovka   -p 8080:8080   ghcr.io/destroyerofcode/diplomovka:latest
+
+To deploy the nginx server:
+1. create a user on hetzner called deploy.
+2. run ssh-copy-id -i ~/.ssh/id_rsa.pub deploy@178.104.252.161
+3. verify connection: ssh deploy@178.104.252.161
+4. ansible-playbook -i ansible/inventory/prod.ini ansible/playbooks/install-nginx.yml -K
+2. 
+   
